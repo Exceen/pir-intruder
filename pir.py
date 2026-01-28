@@ -185,8 +185,11 @@ def get_any_sensor_high():
 def main_true_loop():
     global latest_intruder_left
 
-    previous_state = get_any_sensor_high()
-    set_power_plug_state('on' if previous_state['state'] else 'off') # set initial state
+    previous_state = {
+        'state': False,
+        'pin': None
+    }
+    set_power_plug_state('off')
 
     last_turn_off_signal_sent = None
 
