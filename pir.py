@@ -44,6 +44,9 @@ def get_time(unix_timestamp, pad):
 
 def get_todays_sunrise_sunset_info():
     global SUNRISE_SUNSET_INFO
+    global API_KEY
+    global LAT
+    global LON
 
     date = str(datetime.now().date())
 
