@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 from datetime import datetime, timedelta
-from tapo_plug.tapo import set_state
+from tapo_plug.tapo import set_state as set_tapo_state
 import requests
 
 API_KEY = ''
@@ -121,11 +121,11 @@ def set_power_plug_state(state):
     global power_plug_turned_on
 
     if state == 'on' and not power_plug_turned_on:
-        set_state(state)
+        set_tapo_state(state)
         power_plug_turned_on = True
     elif state == 'off':
         if power_plug_turned_on:
-            set_state(state)
+            set_tapo_state(state)
             power_plug_turned_on = False
 
 def on_event(gpio_pin):
@@ -138,7 +138,7 @@ def on_event(gpio_pin):
     else:
         current_state = GPIO.input(gpio_pin)
 
-    if current_state:
+    if current_state == 1:
         latest_intruder_incoming = datetime.now()
 
         if latest_intruder_left:
@@ -214,7 +214,7 @@ def main_true_loop():
             elif last_turn_off_signal_sent is not None and (datetime.now() - last_turn_off_signal_sent).total_seconds() > PERIODIC_TURN_OFF_INTERVAL_SECONDS:
                 log('No intruder for', get_formatted_time_difference(latest_intruder_left), 'plug already off, but sending off signal again at', get_formatted_timestamp())
                 last_turn_off_signal_sent = datetime.now()
-                set_state('off')
+                set_power_plug_state('off')
 
         time.sleep(0.1)
 
@@ -232,7 +232,7 @@ def main():
         pass
     finally:
         GPIO.cleanup()
-        set_state('off')
+        set_power_plug_state('off')
 
 if __name__ == '__main__':
     main()
